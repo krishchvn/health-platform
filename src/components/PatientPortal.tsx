@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useUser } from '@clerk/clerk-react';
 
 export default function PatientPortal() {
 	const [doctors, setDoctors] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const { user } = useUser();
+	console.log(user);
+	const patientId = user?.unsafeMetadata.id;
 
 	useEffect(() => {
 		const fetchDoctors = async () => {
@@ -55,7 +59,11 @@ export default function PatientPortal() {
 								<td className='px-6 py-4 text-center'>
 									<button
 										className='bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition'
-										onClick={() => alert(`Consulting ${doc?.name}`)}
+										onClick={() => {
+											console.log('Consulting Doctor ID:', doc.id);
+											console.log('Patient Id:', patientId);
+											alert(`Consulting ${doc?.name}`);
+										}}
 									>
 										Consult
 									</button>

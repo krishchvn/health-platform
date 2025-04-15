@@ -13,9 +13,9 @@ export default function RoleSelect() {
 
 	const handleSubmit = async () => {
 		if (!user) return;
-
+		const id = Math.random().toString(36).substring(2, 10);
 		await user?.update({
-			unsafeMetadata: { firstName, lastName, role, occupation },
+			unsafeMetadata: { id, firstName, lastName, role, occupation },
 		});
 		const email = user?.primaryEmailAddress?.emailAddress;
 		if (email === null) {
@@ -27,7 +27,7 @@ export default function RoleSelect() {
 				await axios.post(
 					'https://r4d2qg2jxl.execute-api.us-east-1.amazonaws.com/doctors-list',
 					{
-						id: Math.random().toString(36).substring(2, 10),
+						id: id,
 						name: `${firstName} ${lastName}`,
 						occupation: `${occupation}`,
 						role: 'Doctor',
@@ -45,7 +45,7 @@ export default function RoleSelect() {
 				await axios.post(
 					'https://r4d2qg2jxl.execute-api.us-east-1.amazonaws.com/patients-list',
 					{
-						id: Math.random().toString(36).substring(2, 10),
+						id: id,
 						name: `${firstName} ${lastName}`,
 						occupation: `${occupation}`,
 						role: 'Patient',
