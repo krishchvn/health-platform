@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useUser } from '@clerk/clerk-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function PatientPortal() {
 	const [doctors, setDoctors] = useState([]);
@@ -8,6 +9,8 @@ export default function PatientPortal() {
 	const { user } = useUser();
 	console.log(user);
 	const patientId = user?.unsafeMetadata.id;
+	console.log(patientId, 'patient ');
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const fetchDoctors = async () => {
@@ -63,6 +66,8 @@ export default function PatientPortal() {
 											console.log('Consulting Doctor ID:', doc.id);
 											console.log('Patient Id:', patientId);
 											alert(`Consulting ${doc?.name}`);
+											const chatId = `${doc.id + '_' + patientId}`;
+											navigate(`/chat/${chatId}`);
 										}}
 									>
 										Consult
