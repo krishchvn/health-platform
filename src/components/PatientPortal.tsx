@@ -66,7 +66,7 @@ export default function PatientPortal() {
 											console.log('Consulting Doctor ID:', doc.id);
 											console.log('Patient Id:', patientId);
 											alert(`Consulting ${doc?.name}`);
-											const chatId = `${doc.id + '_' + patientId}`;
+											const chatId = `${doc.id + '__' + patientId}`;
 											navigate(`/chat/${chatId}`);
 										}}
 									>

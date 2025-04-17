@@ -1,18 +1,57 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
 
-const socket = io('http://localhost:4000'); // Replace with deployed URL later
+interface ChatProps {
+	doctorId: string;
+	patientId: string;
+	senderRole: 'Doctor' | 'Patient';
+}
 
-export default function Chat({ doctorId, patientId, senderRole }) {
+interface ChatMessage {
+	sender: string;
+	message: string;
+	timestamp: number;
+}
+
+const socket = io('http://localhost:4000'); // Replace with your deployed URL
+
+export default function Chat({
+	doctorId,
+	patientId,
+	senderRole,
+	patientName,
+}: ChatProps) {
 	const [message, setMessage] = useState('');
-	const [messages, setMessages] = useState([]);
+	const [messages, setMessages] = useState<ChatMessage[]>([]);
+	const scrollRef = useRef<HTMLDivElement>(null);
+	console.log(doctorId, patientId, 'ids');
+	const chatId = `${doctorId}__${patientId}`;
 
+	// Fetch existing messages from DynamoDB on load
 	useEffect(() => {
-		console.log(doctorId, patientId, 'chat.tsx');
+		const fetchMessages = async () => {
+			try {
+				const res = await axios.get(
+					'https://oytr8jp234.execute-api.us-east-1.amazonaws.com/getAllMessages',
+					{
+						params: { chatId },
+					}
+				);
+				setMessages(res.data.messages || []);
+			} catch (err) {
+				console.error('❌ Error fetching chat history:', err);
+			}
+		};
+
+		fetchMessages();
+	}, [chatId]);
+
+	// console.log(messages, 'mesages');
+	useEffect(() => {
 		socket.emit('join_room', { doctorId, patientId });
 
-		socket.on('receive_message', data => {
+		socket.on('receive_message', (data: ChatMessage) => {
 			setMessages(prev => [...prev, data]);
 		});
 
@@ -21,34 +60,36 @@ export default function Chat({ doctorId, patientId, senderRole }) {
 		};
 	}, [doctorId, patientId]);
 
+	useEffect(() => {
+		scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+	}, [messages]);
+
 	const sendMessage = async () => {
-		console.log(doctorId, patientId, senderRole, message, Date.now());
-		if (!message) return;
+		if (!message.trim()) return;
+
 		const msgPayload = {
 			doctorId,
 			patientId,
 			sender: senderRole,
 			message,
 			timestamp: Date.now(),
+			patientName,
 		};
 
+		// Emit through socket
 		socket.emit('send_message', msgPayload);
+
+		// Save to DynamoDB via Lambda
 		try {
 			await axios.post(
 				'https://oytr8jp234.execute-api.us-east-1.amazonaws.com/postMessages',
-				{
-					doctorId,
-					patientId,
-					sender: senderRole,
-					message,
-					timestamp: Date.now(),
-				}
+				msgPayload
 			);
-			console.log('inside await fetch');
 		} catch (err) {
-			console.error('Failed to save message to DynamoDB:', err);
+			console.error('❌ Failed to save message to DynamoDB:', err);
 		}
-		setMessages(prev => [...prev, { sender: senderRole, message }]);
+
+		setMessages(prev => [...prev, msgPayload]);
 		setMessage('');
 	};
 
@@ -67,6 +108,7 @@ export default function Chat({ doctorId, patientId, senderRole }) {
 						<span>{msg.message}</span>
 					</div>
 				))}
+				<div ref={scrollRef} />
 			</div>
 
 			<div className='flex space-x-2'>
