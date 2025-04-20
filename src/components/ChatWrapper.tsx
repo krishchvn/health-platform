@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
 import Chat from './Chat';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const ChatWrapper = () => {
 	const { chatId } = useParams(); // chatId = doctorId__patientId
@@ -11,12 +13,38 @@ const ChatWrapper = () => {
 	const [doctorId, patientId] = chatId!.split('__');
 	const senderRole =
 		user?.unsafeMetadata.id === patientId ? 'Patient' : 'Doctor';
-	let patientName = '';
-	if (senderRole == 'Patient') {
-		patientName =
-			user?.unsafeMetadata.firstName + ' ' + user?.unsafeMetadata.lastName;
-	}
+	// if (senderRole == 'Patient') {
+	// 	patientName =
+	// 		user?.unsafeMetadata.firstName + ' ' + user?.unsafeMetadata.lastName;
+	// }
+
+	const [doctorName, setDoctorName] = useState('');
+	const [patientName, setPatientName] = useState('');
+
 	console.log(doctorId, patientId, 'wrapper.tsx');
+	// jecarey319@cotigz.com
+	// testaass
+
+	useEffect(() => {
+		const fetchNames = async () => {
+			try {
+				const res = await axios.get(
+					' https://r4d2qg2jxl.execute-api.us-east-1.amazonaws.com/fetchList'
+				);
+				const { doctors, patients } = res.data;
+				console.log(doctors, patients, 'resdata');
+				const doctor = doctors.find(d => d.id === doctorId);
+				const patient = patients.find(p => p.id === patientId);
+				console.log(doctor, patient, 'resdata');
+				setDoctorName(doctor?.name || '');
+				setPatientName(patient?.name || '');
+			} catch (err) {
+				console.error('❌ Failed to fetch doctor/patient names', err);
+			}
+		};
+
+		fetchNames();
+	}, [doctorId, patientId]);
 
 	return (
 		<Chat
@@ -24,6 +52,7 @@ const ChatWrapper = () => {
 			patientId={patientId}
 			senderRole={senderRole}
 			patientName={patientName}
+			doctorName={doctorName}
 		/>
 	);
 };

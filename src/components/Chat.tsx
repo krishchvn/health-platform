@@ -21,11 +21,12 @@ export default function Chat({
 	patientId,
 	senderRole,
 	patientName,
+	doctorName,
 }: ChatProps) {
 	const [message, setMessage] = useState('');
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const scrollRef = useRef<HTMLDivElement>(null);
-	console.log(doctorId, patientId, 'ids');
+	console.log(doctorId, patientId, 'ids', patientName, doctorName);
 	const chatId = `${doctorId}__${patientId}`;
 
 	// Fetch existing messages from DynamoDB on load
@@ -66,7 +67,7 @@ export default function Chat({
 
 	const sendMessage = async () => {
 		if (!message.trim()) return;
-
+		console.log(doctorName, patientName, 'dp');
 		const msgPayload = {
 			doctorId,
 			patientId,
@@ -74,6 +75,7 @@ export default function Chat({
 			message,
 			timestamp: Date.now(),
 			patientName,
+			doctorName,
 		};
 
 		// Emit through socket

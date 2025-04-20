@@ -4,6 +4,18 @@ import { useUser } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function PatientPortal() {
+	interface ChatMessage {
+		sender: string;
+		message: string;
+		timestamp: number;
+	}
+
+	interface ChatGroup {
+		doctorId: string;
+		doctorName: string;
+		messages: ChatMessage[];
+	}
+
 	const [doctors, setDoctors] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const { user } = useUser();
@@ -11,6 +23,7 @@ export default function PatientPortal() {
 	const patientId = user?.unsafeMetadata.id;
 	console.log(patientId, 'patient ');
 	const navigate = useNavigate();
+	const [activeChats, setActiveChats] = useState<ChatGroup[]>([]);
 
 	useEffect(() => {
 		const fetchDoctors = async () => {
@@ -29,10 +42,32 @@ export default function PatientPortal() {
 		fetchDoctors();
 	}, []);
 
+	useEffect(() => {
+		if (!patientId) return;
+
+		const fetchChats = async () => {
+			try {
+				const res = await axios.get(
+					`https://oytr8jp234.execute-api.us-east-1.amazonaws.com/getPatientMessages`,
+					{
+						params: { patientId },
+					}
+				);
+				setActiveChats(res.data.chats || []);
+			} catch (err) {
+				console.error('Failed to fetch chats:', err);
+			}
+		};
+		fetchChats();
+	}, [patientId]);
+	console.log(activeChats, 'active');
 	if (loading) return <div>Loading...</div>;
 
 	return (
 		<div className='p-6'>
+			<h2 className='text-2xl font-bold mb-4 text-blue-700'>
+				Welcome, {user?.unsafeMetadata.firstName}
+			</h2>
 			<h2 className='text-3xl font-bold mb-4 text-blue-700'>
 				Available Doctors
 			</h2>
@@ -77,6 +112,39 @@ export default function PatientPortal() {
 						))}
 					</tbody>
 				</table>
+			</div>
+			<div>
+				<h2 className='mt-10 text-xl text-blue-700 mb-2 font-semibold'>
+					Your Consultations
+				</h2>
+				{activeChats.length === 0 ? (
+					<p>No consultations yet</p>
+				) : (
+					<ul className='space-y-2'>
+						{activeChats.map(chat => {
+							const lastMessage = chat.messages[chat.messages.length - 1];
+
+							return (
+								<li key={chat.doctorId} className='border p-3 rounded'>
+									<div>
+										Doctor: {chat.doctorName || chat.doctorId}
+										<p className='text-gray-500 text-sm mt-1'>
+											Last: {lastMessage?.message || ''}
+										</p>
+									</div>
+									<button
+										className='mt-2 bg-blue-600 text-white px-4 py-1 rounded'
+										onClick={() =>
+											navigate(`/chat/${chat.doctorId}__${patientId}`)
+										}
+									>
+										Open Chat
+									</button>
+								</li>
+							);
+						})}
+					</ul>
+				)}
 			</div>
 		</div>
 	);
