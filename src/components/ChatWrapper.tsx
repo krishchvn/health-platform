@@ -22,8 +22,6 @@ const ChatWrapper = () => {
 	const [patientName, setPatientName] = useState('');
 
 	console.log(doctorId, patientId, 'wrapper.tsx');
-	// jecarey319@cotigz.com
-	// testaass
 
 	useEffect(() => {
 		const fetchNames = async () => {

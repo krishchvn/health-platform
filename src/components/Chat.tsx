@@ -14,7 +14,10 @@ interface ChatMessage {
 	timestamp: number;
 }
 
-const socket = io('http://localhost:4000'); // Replace with your deployed URL
+// const socket = io('http://localhost:4000'); // Replace with your deployed URL
+const socket = io('http://localhost:4000', {
+	autoConnect: true,
+});
 
 export default function Chat({
 	doctorId,
@@ -51,14 +54,15 @@ export default function Chat({
 
 	// console.log(messages, 'mesages');
 	useEffect(() => {
-		socket.emit('join_room', { doctorId, patientId });
-
-		socket.on('receive_message', (data: ChatMessage) => {
+		const handleReceiveMessage = (data: ChatMessage) => {
 			setMessages(prev => [...prev, data]);
-		});
+			socket.emit('join_room', { doctorId, patientId });
+		};
+
+		socket.once('receive_message', handleReceiveMessage);
 
 		return () => {
-			socket.off('receive_message');
+			socket.off('receive_message', handleReceiveMessage);
 		};
 	}, [doctorId, patientId]);
 
