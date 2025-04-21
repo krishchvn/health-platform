@@ -48,5 +48,8 @@ node socket.js
 5. Notification sent to recipient via SNS
 6. Doctor and Patient dashboards show real-time chat summaries and latest messages
 
+# Author
+Made with ❤️ by Krish
 
+    If you found this project cool, consider ⭐️ starring the repo!
 
