@@ -1,54 +1,52 @@
-# React + TypeScript + Vite
+# Health Platform – Real-Time Consultation Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack, serverless health consultation platform where patients can connect with doctors in real-time using secure chat, image sharing, and notification services.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Technologies Used
 
-## Expanding the ESLint configuration
+| Technology          | Purpose                                                                 |
+|---------------------|-------------------------------------------------------------------------|
+| **React + TypeScript** | Frontend UI with role-based dashboards for patients and doctors         |
+| **Tailwind CSS**     | Styling components for responsiveness and utility-first design          |
+| **Clerk**            | Authentication and role-based access (Doctor vs Patient)                |
+| **Socket.io**        | Real-time, 1-to-1 chat between patient and doctor                        |
+| **AWS DynamoDB**     | Storing user records and chat messages in NoSQL format                  |
+| **AWS Lambda**       | Serverless backend APIs for posting and retrieving messages             |
+| **AWS S3**           | Uploading and serving image attachments in chat                         |
+| **AWS EventBridge**  | Triggers on S3 upload to store metadata in DynamoDB automatically       |
+| **AWS SNS**          | Sending real-time email notifications to recipient when new messages arrive |
+| **API Gateway**      | Routing frontend requests to Lambda functions securely                  |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+---
+# How to start 
+### Clerk Auth
+Sign in to Clerk and you can find VITE_CLERK_PUBLISHABLE_KEY in API Keys.
+Create a .env file in root folder to store VITE_CLERK_PUBLISHABLE_KEY.
+### Frontend (React)
+```bash
+git clone https://github.com/krishchvn/health-platform.git
+npm install
+npm run dev
+```
+Open another terminal
+```
+cd server
+node socket.js
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+# WorkFlow
+1. User signs up via Clerk and selects role
+2. Role is stored in Clerk metadata → redirected to appropriate dashboard
+3. If Role == Patient clicks “Consult” → opens chat with selected doctor
+   If Role == Doctor sees patients that have consulted and clicks "Open Chat" for further consultation
+4. Chat messages and images are:
+    4.1 Sent via Socket.io
+    4.2 Stored in DynamoDB (via Lambda)
+    4.3 Images uploaded to S3 -> trigger EventBridge -> metadata saved in DynamoDB
+5. Notification sent to recipient via SNS
+6. Doctor and Patient dashboards show real-time chat summaries and latest messages
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+
