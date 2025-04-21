@@ -25,6 +25,7 @@ export default function Chat({
 }: ChatProps) {
 	const [message, setMessage] = useState('');
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
 	const scrollRef = useRef<HTMLDivElement>(null);
 	console.log(doctorId, patientId, 'ids', patientName, doctorName);
 	const chatId = `${doctorId}__${patientId}`;
@@ -95,9 +96,40 @@ export default function Chat({
 		setMessage('');
 	};
 
+	const handleImageUpload = async (file: File) => {
+		const timestamp = Date.now();
+		const fileName = `${timestamp}_${doctorId}_${doctorName}_${patientId}_${patientName}_${senderRole}`;
+		const s3Url = `https://platform-chat-images.s3.amazonaws.com/${fileName}`;
+
+		try {
+			await axios.put(s3Url, file, {
+				headers: { 'Content-Type': file.type },
+			});
+
+			console.log('✅ Uploaded image to:', s3Url);
+
+			// Optional: show placeholder while EventBridge processes it
+			setMessages(prev => [
+				...prev,
+				{
+					sender: senderRole,
+					message: '[Image uploaded]',
+					imageUrl: s3Url,
+					timestamp,
+				},
+			]);
+		} catch (err) {
+			console.error('❌ Image upload failed:', err);
+		}
+	};
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (file) handleImageUpload(file);
+	};
+
 	return (
 		<div className='p-4 max-w-xl mx-auto space-y-4'>
-			<div className='h-64 overflow-y-auto border rounded p-2 bg-white shadow'>
+			<div className='h-[calc(100vh-8rem)] w-full overflow-y-auto border rounded p-4 bg-white shadow-lg'>
 				{messages.map((msg, idx) => (
 					<div
 						key={idx}
@@ -107,7 +139,16 @@ export default function Chat({
 								: 'text-left text-gray-700'
 						}`}
 					>
-						<span>{msg.message}</span>
+						{msg.message?.includes('s3.amazonaws.com') ||
+						msg.message?.startsWith('http') ? (
+							<img
+								src={msg.message}
+								alt='chat-img'
+								className='w-40 rounded shadow'
+							/>
+						) : (
+							<span>{msg.message}</span>
+						)}
 					</div>
 				))}
 				<div ref={scrollRef} />
@@ -119,6 +160,19 @@ export default function Chat({
 					value={message}
 					onChange={e => setMessage(e.target.value)}
 					placeholder='Type a message...'
+				/>
+				<button
+					className='bg-green-600 text-white px-2 py-1 rounded'
+					onClick={() => fileInputRef.current?.click()}
+				>
+					Send Image
+				</button>
+				<input
+					ref={fileInputRef}
+					type='file'
+					accept='image/*'
+					onChange={handleFileChange}
+					className='hidden'
 				/>
 				<button
 					onClick={sendMessage}
