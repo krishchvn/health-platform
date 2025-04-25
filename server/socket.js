@@ -43,5 +43,7 @@ io.on('connection', socket => {
 
 const PORT = 4000;
 server.listen(PORT, () => {
-	console.log(`🚀 Socket.io server running on http://localhost:${PORT}`);
+	console.log(
+		`🚀 Socket.io server running on https://health-platform-3v57.onrender.com`
+	);
 });

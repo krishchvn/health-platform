@@ -31,8 +31,8 @@ const ChatWrapper = () => {
 				);
 				const { doctors, patients } = res.data;
 				console.log(doctors, patients, 'resdata');
-				const doctor = doctors.find(d => d.id === doctorId);
-				const patient = patients.find(p => p.id === patientId);
+				const doctor = doctors.find((d: any) => d.id === doctorId);
+				const patient = patients.find((p: any) => p.id === patientId);
 				console.log(doctor, patient, 'resdata');
 				setDoctorName(doctor?.name || '');
 				setPatientName(patient?.name || '');

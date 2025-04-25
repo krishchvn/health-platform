@@ -6,6 +6,8 @@ interface ChatProps {
 	doctorId: string;
 	patientId: string;
 	senderRole: 'Doctor' | 'Patient';
+	doctorName?: string;
+	patientName?: string;
 }
 
 interface ChatMessage {
@@ -14,8 +16,7 @@ interface ChatMessage {
 	timestamp: number;
 }
 
-// const socket = io('http://localhost:4000'); // Replace with your deployed URL
-const socket = io('http://localhost:4000', {
+const socket = io('https://health-platform-3v57.onrender.com', {
 	autoConnect: true,
 });
 
