@@ -28,7 +28,6 @@ io.on('connection', socket => {
 		const roomId = `${doctorId}__${patientId}`;
 		console.log(`📩 ${sender} sent message in ${roomId}: ${message}`);
 
-		// Broadcast message to other participant
 		io.to(roomId).emit('receive_message', {
 			sender,
 			message,

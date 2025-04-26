@@ -33,7 +33,7 @@ export default function PatientPortal() {
 	useEffect(() => {
 		const fetchDoctors = async () => {
 			try {
-				const res = await axios.get(
+				const res: any = await axios.get(
 					'https://r4d2qg2jxl.execute-api.us-east-1.amazonaws.com/doctors-list'
 				);
 				setDoctors(res.data.doctors);
@@ -52,7 +52,7 @@ export default function PatientPortal() {
 
 		const fetchChats = async () => {
 			try {
-				const res = await axios.get(
+				const res: any = await axios.get(
 					`https://oytr8jp234.execute-api.us-east-1.amazonaws.com/getPatientMessages`,
 					{
 						params: { patientId },

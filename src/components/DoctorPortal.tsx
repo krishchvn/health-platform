@@ -26,7 +26,7 @@ const DoctorPortal = () => {
 
 		const fetchChats = async () => {
 			try {
-				const res = await axios.get(
+				const res: any = await axios.get(
 					`https://oytr8jp234.execute-api.us-east-1.amazonaws.com/getMessages`,
 					{
 						params: { doctorId },

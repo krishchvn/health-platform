@@ -38,7 +38,7 @@ export default function Chat({
 	useEffect(() => {
 		const fetchMessages = async () => {
 			try {
-				const res = await axios.get(
+				const res: any = await axios.get(
 					'https://oytr8jp234.execute-api.us-east-1.amazonaws.com/getAllMessages',
 					{
 						params: { chatId },
@@ -73,7 +73,7 @@ export default function Chat({
 
 	const sendMessage = async () => {
 		if (!message.trim()) return;
-		console.log(doctorName, patientName, 'dp');
+		// console.log(doctorName, patientName, 'dp');
 		const msgPayload = {
 			doctorId,
 			patientId,
@@ -84,10 +84,8 @@ export default function Chat({
 			doctorName,
 		};
 
-		// Emit through socket
 		socket.emit('send_message', msgPayload);
 
-		// Save to DynamoDB via Lambda
 		try {
 			await axios.post(
 				'https://oytr8jp234.execute-api.us-east-1.amazonaws.com/postMessages',
@@ -111,7 +109,7 @@ export default function Chat({
 				headers: { 'Content-Type': file.type },
 			});
 
-			console.log('✅ Uploaded image to:', s3Url);
+			console.log(' Uploaded image to:', s3Url);
 
 			// Optional: show placeholder while EventBridge processes it
 			setMessages(prev => [
@@ -124,7 +122,7 @@ export default function Chat({
 				},
 			]);
 		} catch (err) {
-			console.error('❌ Image upload failed:', err);
+			console.error(' Image upload failed:', err);
 		}
 	};
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
