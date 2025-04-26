@@ -13,7 +13,7 @@ export default function App() {
 			<Navbar />
 			<Routes>
 				<Route path='/' element={<HomePage />} />
-				<Route path='/select-role' element={<RoleSelect />} />
+				<Route path='/select-role/*' element={<RoleSelect />} />
 				<Route
 					path='/patient-dashboard'
 					element={
