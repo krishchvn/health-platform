@@ -37,7 +37,7 @@ export default function PatientPortal() {
 					'https://r4d2qg2jxl.execute-api.us-east-1.amazonaws.com/doctors-list'
 				);
 				setDoctors(res.data.doctors);
-				console.log(res, 'res here');
+				// console.log(res, 'res here');
 				setLoading(false);
 			} catch (err) {
 				console.error('Error fetching users:', err);
@@ -103,8 +103,8 @@ export default function PatientPortal() {
 									<button
 										className='bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition'
 										onClick={() => {
-											console.log('Consulting Doctor ID:', doc.id);
-											console.log('Patient Id:', patientId);
+											// console.log('Consulting Doctor ID:', doc.id);
+											// console.log('Patient Id:', patientId);
 											alert(`Consulting ${doc?.name}`);
 											const chatId = `${doc.id + '__' + patientId}`;
 											navigate(`/chat/${chatId}`);

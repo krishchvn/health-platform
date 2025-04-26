@@ -5,6 +5,14 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const ChatWrapper = () => {
+	interface Doctor {
+		id: string;
+		name: string;
+	}
+	interface Patient {
+		id: string;
+		name: string;
+	}
 	const { chatId } = useParams(); // chatId = doctorId__patientId
 	const { user } = useUser();
 
@@ -21,7 +29,7 @@ const ChatWrapper = () => {
 	const [doctorName, setDoctorName] = useState('');
 	const [patientName, setPatientName] = useState('');
 
-	console.log(doctorId, patientId, 'wrapper.tsx');
+	// console.log(doctorId, patientId, 'wrapper.tsx');
 
 	useEffect(() => {
 		const fetchNames = async () => {
@@ -29,11 +37,14 @@ const ChatWrapper = () => {
 				const res = await axios.get(
 					' https://r4d2qg2jxl.execute-api.us-east-1.amazonaws.com/fetchList'
 				);
-				const { doctors, patients } = res.data;
-				console.log(doctors, patients, 'resdata');
+				const { doctors, patients } = res.data as {
+					doctors: Doctor[];
+					patients: Patient[];
+				};
+				// console.log(doctors, patients, 'resdata');
 				const doctor = doctors.find((d: any) => d.id === doctorId);
 				const patient = patients.find((p: any) => p.id === patientId);
-				console.log(doctor, patient, 'resdata');
+				// console.log(doctor, patient, 'resdata');
 				setDoctorName(doctor?.name || '');
 				setPatientName(patient?.name || '');
 			} catch (err) {

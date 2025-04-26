@@ -111,7 +111,6 @@ export default function Chat({
 
 			console.log(' Uploaded image to:', s3Url);
 
-			// Optional: show placeholder while EventBridge processes it
 			setMessages(prev => [
 				...prev,
 				{
