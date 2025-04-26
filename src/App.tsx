@@ -3,8 +3,8 @@ import Navbar from './components/Navbar';
 import RoleSelect from './components/RoleSelect';
 import PatientPortal from './components/PatientPortal';
 import DoctorPortal from './components/DoctorPortal';
-import { Routes, Route, useNavigate } from 'react-router-dom';
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+import { Routes, Route } from 'react-router-dom';
+import { SignedIn, RedirectToSignIn } from '@clerk/clerk-react';
 import ChatWrapper from './components/ChatWrapper';
 
 export default function App() {

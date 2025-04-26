@@ -15,8 +15,13 @@ export default function PatientPortal() {
 		doctorName: string;
 		messages: ChatMessage[];
 	}
+	interface Doctor {
+		id: string;
+		name: string;
+		specialization: string;
+	}
 
-	const [doctors, setDoctors] = useState([]);
+	const [doctors, setDoctors] = useState<Doctor[]>([]);
 	const [loading, setLoading] = useState(true);
 	const { user } = useUser();
 	console.log(user);
@@ -60,13 +65,13 @@ export default function PatientPortal() {
 		};
 		fetchChats();
 	}, [patientId]);
-	console.log(activeChats, 'active');
+	// console.log(activeChats, 'active');
 	if (loading) return <div>Loading...</div>;
 
 	return (
 		<div className='p-6'>
 			<h2 className='text-2xl font-bold mb-4 text-blue-700'>
-				Welcome, {user?.unsafeMetadata.firstName}
+				Welcome, {user?.unsafeMetadata.firstName as string}
 			</h2>
 			<h2 className='text-3xl font-bold mb-4 text-blue-700'>
 				Available Doctors

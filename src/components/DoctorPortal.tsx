@@ -45,7 +45,7 @@ const DoctorPortal = () => {
 	return (
 		<div className='p-6'>
 			<h2 className='text-2xl font-bold mb-4 text-blue-700'>
-				Welcome, Dr. {user?.unsafeMetadata.firstName}
+				Welcome, Dr. {user?.unsafeMetadata.firstName as string}
 			</h2>
 			<div>
 				<h3 className='text-xl mb-2 font-semibold'>Active Chats</h3>
